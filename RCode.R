@@ -79,16 +79,6 @@ covariates <- c("pat.age", "pat.bmi", "pat.ses", "mat.age", "mat.bmi", "mat.ses"
 
 # Load and check phenotype data
 pheno <- read.csv("EWAS/pat_smoke/phenofile.alspac.csv",header=TRUE,stringsAsFactors=FALSE) #change filename/location to point to your phenotype file
-cells <- read.table("/panfs/panasas01/dedicated-mrcieu/studies/latest/alspac/epigenetic/methylation/450k/aries/released/2016-05-03/data/derived/cellcounts/cord/andrews-and-bakulski/data.txt", header=TRUE, stringsAsFactors = FALSE)
-load("/panfs/panasas01/dedicated-mrcieu/studies/latest/alspac/epigenetic/methylation/450k/aries/released/2016-05-03/data/samplesheet/data.Robj")
-samplesheet<-subset(samplesheet, time_point=="cord")
-qletB<-samplesheet$ALN[which(samplesheet$QLET=="B")] #find alns for multiple pregnancies
-samplesheet<-samplesheet[-which(samplesheet$ALN %in% qletB),] #remove multiple pregnancies
-pheno<-merge(pheno,samplesheet[,c("ALN","Sample_Name")],by.x="aln",by.y="ALN")
-pheno <- merge(pheno,cells,by.x="Sample_Name",by.y="IID")
-pheno <- pheno[,c("Sample_Name","pat.active.smoking","mat.active.smoking","mat.passive.smoking","pat.age","mat.age","pat.bmi","mat.bmi","pat.ses","mat.ses","parity","sex","bio.dad","Bcell","CD4T","CD8T","Gran","Mono","NK","nRBC")]
-colnames(pheno)[1] <- "sample.id"
-colnames(pheno) <-tolower(colnames(pheno))
 
 for(i in 1:length(c("sample.id",traits.and.covariates,cell.names))) {
 print(ifelse(c("sample.id",traits.and.covariates,cell.names)[i] %in% colnames(pheno)==FALSE,
@@ -102,14 +92,8 @@ table(pheno$bio.dad) #checking number of partners that are not biological father
 pheno <- pheno[which(pheno$bio.dad==1),] #removing partners that are not biological fathers
 
 # Load methylation data and perform QC (e.g. filter probes with high detection P-values)
-load("/panfs/panasas01/dedicated-mrcieu/studies/latest/alspac/epigenetic/methylation/450k/aries/released/2016-05-03/data/betas/data.Robj")
-load("/panfs/panasas01/dedicated-mrcieu/studies/latest/alspac/epigenetic/methylation/450k/aries/released/2016-05-03/data/detection_p_values/data.Robj")
-pvals <- detp[,pheno$sample.id] #keep the samples that correspond to the time point you're interested in
-pvalue_over_0.05 <- pvals > 0.05
-count_over_0.05 <- rowSums(sign(pvalue_over_0.05))
-Probes_to_exclude_Pvalue <- rownames(pvals)[which(count_over_0.05 > ncol(pvals)*0.05)]
-meth <- norm.beta.random[,which(colnames(norm.beta.random) %in% pheno$sample.id)]
-meth <- meth[-which(rownames(meth) %in% Probes_to_exclude_Pvalue),]
+load("/panfs/panasas01/dedicated-mrcieu/studies/latest/alspac/epigenetic/methylation/450k/aries/released/2016-05-03/data/betas/data.Robj") #change filename/location to point to your methylation data (meth)
+# Perform any cohort-specific QC at this point (e.g. you might want to remove probes with high detection p-values)
 
 # IQR*3 method to remove outliers (if this has not already been applied to your data)
 meth <- IQR.removal(meth)
@@ -125,7 +109,6 @@ pheno.mutual.boys.only <- pheno.mutual[which(pheno.mutual$sex == 0),]
 pheno.mutual.girls.only <- pheno.mutual[which(pheno.mutual$sex == 1),]
 
 # Summarise pheno data and save summaries as .csv files
-setwd("EWAS/pat_smoke/")
 mutual.pat.tableone <- print(CreateTableOne(data=pheno.mutual[,-1],strata="pat.active.smoking",factorVars=c("pat.active.smoking","mat.active.smoking","mat.ses","pat.ses","parity","sex")))
 mutual.mat.tableone <- print(CreateTableOne(data=pheno.mutual[,-1],strata="mat.active.smoking",factorVars=c("pat.active.smoking","mat.active.smoking","mat.ses","pat.ses","parity","sex")))
 pat.only.tableone <- print(CreateTableOne(data=pheno.pat.only[,-1],strata="pat.active.smoking",factorVars=c("pat.active.smoking","mat.ses","pat.ses","parity","sex")))
