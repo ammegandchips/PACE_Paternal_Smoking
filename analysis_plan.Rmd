@@ -64,7 +64,7 @@ Perhaps moreso than in previous PACE analyses, it is very important that covaria
 
 * **Maternal BMI (mat.bmi):** continuous, numerical variable in kg/m2. Values can be either self-reported or measured. Pre-pregnancy BMI is preferred, but early pregnancy BMI is also acceptable. Please double check BMI values >= +/- 5 SD from the mean in your dataset to make sure they are not data entry errors.
 
-* **Paternal social class (pat.ses):** binary numeric variable (1=high/0=low), please use your preferred classification, but note that our preference is for education level. *If you do not have paternal social class, please use maternal social class instead, but please indicate this in the Excel document*
+* **Paternal social class (pat.ses):** binary numeric variable (1=high/0=low), please use your preferred classification, but note that our preference is for education level. *If you do not have paternal social class, please use maternal social class instead, but please indicate this in the Excel document. In order for the code to run, you should still call this variable 'pat.ses' even if you're using maternal ses*
 
 * **Paternal age (pat.age):** continuous numeric variable in years
 
@@ -154,7 +154,7 @@ You shouldn't have to rewrite or add to the code, unless otherwise stated.
 
 There are just two inputs required for these analyses:
 
-1) pheno: a dataframe containing all the "phenotype" data needed for this project. Each row is a sample(individual) and each column is a different variable. Necessary variable names are: "pat.active.smoking", "mat.active.smoking", "mat.passive.smoking", "sex","pat.ses",  "mat.ses", "pat.age", "mat.age", "pat.bmi", "mat.bmi", "parity". If these columns are named differently in your dataset, please rename the columns accordingly.
+1) pheno: a dataframe containing all the "phenotype" data needed for this project. Each row is a sample(individual) and each column is a different variable. Necessary variable names are: "pat.active.smoking", "mat.active.smoking", "mat.passive.smoking", "sex","pat.ses",  "pat.age", "mat.age", "pat.bmi", "mat.bmi", "parity". If these columns are named differently in your dataset, please rename the columns accordingly.
 
 2) meth: a matrix of methylation illumina beta values. Each column is a sample and each row is a probe on the array (450k or EPIC). Column names must correspond to the sample.id column in pheno.
 
