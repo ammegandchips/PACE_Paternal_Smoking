@@ -12,7 +12,7 @@
 # There are just two inputs required for this analysis:
 # 1) pheno: a dataframe containing all the "phenotype" data needed for this project. 
 #    Each row is a sample(individual) and each column is a different variable. 
-#    Necessary variable names are: "pat.active.smoking", "mat.active.smoking","mat.passive.smoking","sex","pat.ses","mat.ses","pat.age","mat.age","pat.bmi","mat.bmi","parity"
+#    Necessary variable names are: "pat.active.smoking", "mat.active.smoking","mat.passive.smoking","sex","pat.ses","pat.age","mat.age","pat.bmi","mat.bmi","parity"
 #    If these columns are named differently in your dataset, please rename the columns accordingly
 #    Details on how to code these variables are provided in the analysis plan.
 # 2) meth: a matrix of methylation illumina beta values. Each column is a sample and each row is a probe on the array (450k or EPIC). 
@@ -74,8 +74,8 @@ cell.names <- if(timepoint=="birth"){
     }else{
      c("nk","gran","bcell","cd8t","cd4t","mono")
    }
-traits.and.covariates <- c("pat.active.smoking", "mat.active.smoking","mat.passive.smoking","sex","pat.ses","mat.ses","pat.age","mat.age","pat.bmi","mat.bmi","parity")
-covariates <- c("pat.age", "pat.bmi", "pat.ses", "mat.age", "mat.bmi", "mat.ses" , "parity", cell.names)
+traits.and.covariates <- c("pat.active.smoking", "mat.active.smoking","mat.passive.smoking","sex","pat.ses","pat.age","mat.age","pat.bmi","mat.bmi","parity")
+covariates <- c("pat.age", "pat.bmi", "pat.ses", "mat.age", "mat.bmi", "parity", cell.names)
 
 # Load and check phenotype data
 pheno <- read.csv("EWAS/pat_smoke/phenofile.alspac.csv",header=TRUE,stringsAsFactors=FALSE) #change filename/location to point to your phenotype file
@@ -109,10 +109,10 @@ pheno.mutual.boys.only <- pheno.mutual[which(pheno.mutual$sex == 0),]
 pheno.mutual.girls.only <- pheno.mutual[which(pheno.mutual$sex == 1),]
 
 # Summarise pheno data and save summaries as .csv files
-mutual.pat.tableone <- print(CreateTableOne(data=pheno.mutual[,-1],strata="pat.active.smoking",factorVars=c("pat.active.smoking","mat.active.smoking","mat.ses","pat.ses","parity","sex")))
-mutual.mat.tableone <- print(CreateTableOne(data=pheno.mutual[,-1],strata="mat.active.smoking",factorVars=c("pat.active.smoking","mat.active.smoking","mat.ses","pat.ses","parity","sex")))
-pat.only.tableone <- print(CreateTableOne(data=pheno.pat.only[,-1],strata="pat.active.smoking",factorVars=c("pat.active.smoking","mat.ses","pat.ses","parity","sex")))
-passive.tableone <- print(CreateTableOne(data=pheno.passive[,-1],strata="mat.passive.smoking",factorVars=c("mat.ses","pat.ses","parity","sex")))
+mutual.pat.tableone <- print(CreateTableOne(data=pheno.mutual[,-1],strata="pat.active.smoking",factorVars=c("pat.active.smoking","mat.active.smoking","pat.ses","parity","sex")))
+mutual.mat.tableone <- print(CreateTableOne(data=pheno.mutual[,-1],strata="mat.active.smoking",factorVars=c("pat.active.smoking","mat.active.smoking","pat.ses","parity","sex")))
+pat.only.tableone <- print(CreateTableOne(data=pheno.pat.only[,-1],strata="pat.active.smoking",factorVars=c("pat.active.smoking","pat.ses","parity","sex")))
+passive.tableone <- print(CreateTableOne(data=pheno.passive[,-1],strata="mat.passive.smoking",factorVars=c("pat.ses","parity","sex")))
 
 write.csv(mutual.pat.tableone,file=paste0(study,".patsmoking.mutual.pat.summary.",timepoint,".csv"))
 write.csv(mutual.mat.tableone,file=paste0(study,".patsmoking.mutual.mat.summary.",timepoint,".csv"))
