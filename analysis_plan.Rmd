@@ -64,9 +64,7 @@ Perhaps moreso than in previous PACE analyses, it is very important that covaria
 
 * **Maternal BMI (mat.bmi):** continuous, numerical variable in kg/m2. Values can be either self-reported or measured. Pre-pregnancy BMI is preferred, but early pregnancy BMI is also acceptable. Please double check BMI values >= +/- 5 SD from the mean in your dataset to make sure they are not data entry errors.
 
-* **Paternal social class (pat.ses):** binary numeric variable (1=high/0=low), please use your preferred classification, but note that our preference is for education level.
-
-* **Maternal social class (mat.ses):** binary numeric variable (1=high/0=low), please use your preferred classification, but note that our preference is for education level.
+* **Paternal social class (pat.ses):** binary numeric variable (1=high/0=low), please use your preferred classification, but note that our preference is for education level. *If you do not have paternal social class, please use maternal social class instead, but please indicate this in the Excel document*
 
 * **Paternal age (pat.age):** continuous numeric variable in years
 
@@ -92,16 +90,16 @@ Perhaps moreso than in previous PACE analyses, it is very important that covaria
 ## EWAS models
 
 ### Minimally-adjusted: Paternal active smoking + Covariates + Cells (model name: minimal.pat)
-Methylation ~ Paternal active smoking + SVs for batch + Paternal age + Paternal BMI + Paternal socioeconomic status + Maternal age + Maternal BMI + Maternal social class + Parity + Estimated cell counts
+Methylation ~ Paternal active smoking + SVs for batch + Paternal age + Paternal BMI + Paternal socioeconomic status + Maternal age + Maternal BMI + Parity + Estimated cell counts
 
 ### Minimally-adjusted: Maternal active smoking + Covariates + Cells (model name: minimal.mat)
-Methylation ~ Maternal active smoking + SVs for batch + Paternal age + Paternal BMI + Paternal socioeconomic status + Maternal age + Maternal BMI + Maternal social class + Parity + Estimated cell counts
+Methylation ~ Maternal active smoking + SVs for batch + Paternal age + Paternal BMI + Paternal socioeconomic status + Maternal age + Maternal BMI + Parity + Estimated cell counts
 
 ### Mutually-adjusted: adjusted for other parent's active smoking status, covariates and cells (model name: mutual)
 
 *Note that the code extracts results for the effect of paternal AND maternal active smoking*
 
-Methylation ~ Paternal smoking + Maternal active smoking status + SVs for batch + Paternal age + Paternal BMI + Paternal socioeconomic status + Maternal age + Maternal BMI + Maternal social class + Parity + Estimated cell counts
+Methylation ~ Paternal smoking + Maternal active smoking status + SVs for batch + Paternal age + Paternal BMI + Paternal socioeconomic status + Maternal age + Maternal BMI + Parity + Estimated cell counts
 
 ### Mutually-adjusted, in boys only (model name: mutual.boys)
 
@@ -109,7 +107,7 @@ Methylation ~ Paternal smoking + Maternal active smoking status + SVs for batch 
 
 *The R code will remove female offspring*
 
-Methylation ~ Paternal active smoking + Maternal active smoking + SVs for batch + Paternal age + Paternal BMI + Paternal socioeconomic status + Maternal age + Maternal BMI + Maternal social class + Parity + Estimated cell counts
+Methylation ~ Paternal active smoking + Maternal active smoking + SVs for batch + Paternal age + Paternal BMI + Paternal socioeconomic status + Maternal age + Maternal BMI + Parity + Estimated cell counts
 
 ### Mutually-adjusted, in girls only (model name: mutual.girls)
 
@@ -117,19 +115,19 @@ Methylation ~ Paternal active smoking + Maternal active smoking + SVs for batch 
 
 *The R code will remove male offspring*
 
-Methylation ~ Paternal active smoking + Maternal active smoking + SVs for batch + Paternal age + Paternal BMI + Paternal socioeconomic status + Maternal age + Maternal BMI + Maternal social class + Parity + Estimated cell counts
+Methylation ~ Paternal active smoking + Maternal active smoking + SVs for batch + Paternal age + Paternal BMI + Paternal socioeconomic status + Maternal age + Maternal BMI + Parity + Estimated cell counts
 
 ### Paternal active smoking, only when mothers are not active smokers (model name: pat.only)
 
 *The R code will exclude any mothers who are active smokers*
 
-Methylation ~ Paternal active smoking + SVs for batch + Paternal age + Paternal BMI + Paternal socioeconomic status + Maternal age + Maternal BMI + Maternal social class + Parity + Estimated cell counts
+Methylation ~ Paternal active smoking + SVs for batch + Paternal age + Paternal BMI + Paternal socioeconomic status + Maternal age + Maternal BMI + Parity + Estimated cell counts
 
 ### Maternal passive smoking in the absence of maternal or paternal active smoking (model name: passive)
 
 *Please exclude any mothers who are active smokers themselves or have partners who are active smokers*
 
-Methylation ~ Maternal passive smoking + SVs for batch + Paternal age + Paternal BMI + Paternal socioeconomic status + Maternal age + Maternal BMI + Maternal social class + Parity + Estimated cell counts
+Methylation ~ Maternal passive smoking + SVs for batch + Paternal age + Paternal BMI + Paternal socioeconomic status + Maternal age + Maternal BMI + Parity + Estimated cell counts
 
 # Outputs
 
