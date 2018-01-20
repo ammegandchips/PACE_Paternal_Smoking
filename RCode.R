@@ -88,8 +88,6 @@ print(ifelse(c("sample.id",traits.and.covariates,cell.names)[i] %in% colnames(ph
 
 table(pheno$mat.passive.smoking,(pheno$mat.active.smoking|pheno$pat.active.smoking)) #checking number of maternal passive smokers with no active smoking for either mother or father
 pheno$mat.passive.smoking[which(pheno$pat.active.smoking==1 |pheno$mat.active.smoking==1)] <- NA #setting maternal passive smoking to missing if mother or father is an active smoker
-table(pheno$bio.dad) #checking number of partners that are not biological fathers
-pheno <- pheno[which(pheno$bio.dad==1),] #removing partners that are not biological fathers
 
 # Load methylation data and perform QC (e.g. filter probes with high detection P-values)
 load("/panfs/panasas01/dedicated-mrcieu/studies/latest/alspac/epigenetic/methylation/450k/aries/released/2016-05-03/data/betas/data.Robj") #change filename/location to point to your methylation data (meth)
@@ -104,7 +102,7 @@ pheno.minimal.pat <-pheno.mutual[,-which(colnames(pheno.mutual) %in% "mat.active
 pheno.minimal.mat <-pheno.mutual[,-which(colnames(pheno.mutual) %in% "pat.active.smoking")]
 pheno.passive <- SVA.generate(meth, pheno, variable.of.interest = "mat.passive.smoking", model.covariates = c(covariates,"sex"),n.sv=20)
 pheno.pat.only <-  pheno.mutual[which(pheno.mutual$mat.active.smoking == 0),]
-pheno.pat.only <-  pheno.pat.only[, -which(colnames(pheno.pat.only) %in% c("mat.active.smoking","pat.active.smoking"))]
+pheno.pat.only <-  pheno.pat.only[, -which(colnames(pheno.pat.only) %in% c("mat.active.smoking"))]
 pheno.mutual.boys.only <- pheno.mutual[which(pheno.mutual$sex == 0),]
 pheno.mutual.girls.only <- pheno.mutual[which(pheno.mutual$sex == 1),]
 
