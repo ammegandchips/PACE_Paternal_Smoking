@@ -12,7 +12,7 @@
 # There are just two inputs required for this analysis:
 # 1) pheno: a dataframe containing all the "phenotype" data needed for this project. 
 #    Each row is a sample(individual) and each column is a different variable. 
-#    Necessary variable names are: "pat.active.smoking", "mat.active.smoking","mat.passive.smoking","sex","pat.ses","pat.age","mat.age","pat.bmi","mat.bmi","parity"
+#    Necessary variable names are: "pat.active.smoking", "mat.active.smoking","mat.passive.smoking","sex","ses","pat.age","mat.age","pat.bmi","mat.bmi","parity"
 #    If these columns are named differently in your dataset, please rename the columns accordingly
 #    Details on how to code these variables are provided in the analysis plan.
 # 2) meth: a matrix of methylation illumina beta values. Each column is a sample and each row is a probe on the array (450k or EPIC). 
@@ -74,8 +74,8 @@ cell.names <- if(timepoint=="birth"){
     }else{
      c("nk","gran","bcell","cd8t","cd4t","mono")
    }
-traits.and.covariates <- c("pat.active.smoking", "mat.active.smoking","mat.passive.smoking","sex","pat.ses","pat.age","mat.age","pat.bmi","mat.bmi","parity")
-covariates <- c("pat.age", "pat.bmi", "pat.ses", "mat.age", "mat.bmi", "parity", cell.names)
+traits.and.covariates <- c("pat.active.smoking", "mat.active.smoking","mat.passive.smoking","sex","ses","pat.age","mat.age","pat.bmi","mat.bmi","parity")
+covariates <- c("pat.age", "pat.bmi", "ses", "mat.age", "mat.bmi", "parity", cell.names)
 
 # Load and check phenotype data
 pheno <- read.csv("EWAS/pat_smoke/phenofile.alspac.csv",header=TRUE,stringsAsFactors=FALSE) #change filename/location to point to your phenotype file
@@ -97,40 +97,53 @@ load("/panfs/panasas01/dedicated-mrcieu/studies/latest/alspac/epigenetic/methyla
 meth <- IQR.removal(meth)
 
 # Generate surrogate variables for technical batch and merge with pheno data to prepare pheno data frames for each EWAS
-pheno.mutual <- SVA.generate(meth, pheno, variable.of.interest = c("pat.active.smoking","mat.active.smoking"), model.covariates = c(covariates,"sex"),n.sv=20)
-pheno.minimal.pat <-pheno.mutual[,-which(colnames(pheno.mutual) %in% "mat.active.smoking")]
-pheno.minimal.mat <-pheno.mutual[,-which(colnames(pheno.mutual) %in% "pat.active.smoking")]
-pheno.passive <- SVA.generate(meth, pheno, variable.of.interest = "mat.passive.smoking", model.covariates = c(covariates,"sex"),n.sv=20)
-pheno.pat.only <-  pheno.mutual[which(pheno.mutual$mat.active.smoking == 0),]
-pheno.pat.only <-  pheno.pat.only[, -which(colnames(pheno.pat.only) %in% c("mat.active.smoking"))]
-pheno.mutual.boys.only <- pheno.mutual[which(pheno.mutual$sex == 0),]
-pheno.mutual.girls.only <- pheno.mutual[which(pheno.mutual$sex == 1),]
+pheno.min.mutual <- SVA.generate(meth, pheno, variable.of.interest = c("pat.active.smoking","mat.active.smoking"), model.covariates = NULL,n.sv=20)
+pheno.min.pat <-pheno.min.mutual[,-which(colnames(pheno.min.mutual) %in% "mat.active.smoking")]
+pheno.min.mat <-pheno.min.mutual[,-which(colnames(pheno.min.mutual) %in% "pat.active.smoking")]
+pheno.covs.mutual <- SVA.generate(meth, pheno, variable.of.interest = c("pat.active.smoking","mat.active.smoking"), model.covariates = c(covariates,"sex"),n.sv=20)
+pheno.covs.pat <-pheno.covs.mutual[,-which(colnames(pheno.covs.mutual) %in% "mat.active.smoking")]
+pheno.covs.mat <-pheno.covs.mutual[,-which(colnames(pheno.covs.mutual) %in% "pat.active.smoking")]
+pheno.covs.passive <- SVA.generate(meth, pheno, variable.of.interest = "mat.passive.smoking", model.covariates = c(covariates,"sex"),n.sv=20)
+pheno.covs.pat.only <-  pheno.covs.mutual[which(pheno.covs.mutual$mat.active.smoking == 0),]
+pheno.covs.pat.only <-  pheno.covs.pat.only[, -which(colnames(pheno.covs.pat.only) %in% c("mat.active.smoking"))]
+pheno.covs.mutual.boys.only <- pheno.covs.mutual[which(pheno.covs.mutual$sex == 0),]
+pheno.covs.mutual.girls.only <- pheno.covs.mutual[which(pheno.covs.mutual$sex == 1),]
 
 # Summarise pheno data and save summaries as .csv files
-mutual.pat.tableone <- print(CreateTableOne(data=pheno.mutual[,-1],strata="pat.active.smoking",factorVars=c("pat.active.smoking","mat.active.smoking","pat.ses","parity","sex")))
-mutual.mat.tableone <- print(CreateTableOne(data=pheno.mutual[,-1],strata="mat.active.smoking",factorVars=c("pat.active.smoking","mat.active.smoking","pat.ses","parity","sex")))
-pat.only.tableone <- print(CreateTableOne(data=pheno.pat.only[,-1],strata="pat.active.smoking",factorVars=c("pat.active.smoking","pat.ses","parity","sex")))
-passive.tableone <- print(CreateTableOne(data=pheno.passive[,-1],strata="mat.passive.smoking",factorVars=c("pat.ses","parity","sex")))
+min.pat.tableone <- print(CreateTableOne(data=pheno.min.mutual[,-1],strata="pat.active.smoking",factorVars=c("pat.active.smoking","mat.active.smoking","ses","parity","sex")))
+min.mat.tableone <- print(CreateTableOne(data=pheno.min.mutual[,-1],strata="mat.active.smoking",factorVars=c("pat.active.smoking","mat.active.smoking","ses","parity","sex")))
+covs.pat.tableone <- print(CreateTableOne(data=pheno.covs.mutual[,-1],strata="pat.active.smoking",factorVars=c("pat.active.smoking","mat.active.smoking","ses","parity","sex")))
+covs.mat.tableone <- print(CreateTableOne(data=pheno.covs.mutual[,-1],strata="mat.active.smoking",factorVars=c("pat.active.smoking","mat.active.smoking","ses","parity","sex")))
+covs.pat.only.tableone <- print(CreateTableOne(data=pheno.covs.pat.only[,-1],strata="pat.active.smoking",factorVars=c("pat.active.smoking","ses","parity","sex")))
+covs.passive.tableone <- print(CreateTableOne(data=pheno.covs.passive[,-1],strata="mat.passive.smoking",factorVars=c("ses","parity","sex")))
 
-write.csv(mutual.pat.tableone,file=paste0(study,".patsmoking.mutual.pat.summary.",timepoint,".csv"))
-write.csv(mutual.mat.tableone,file=paste0(study,".patsmoking.mutual.mat.summary.",timepoint,".csv"))
+write.csv(min.pat.tableone,file=paste0(study,".patsmoking.min.pat.summary.",timepoint,".csv"))
+write.csv(min.mat.tableone,file=paste0(study,".patsmoking.min.mat.summary.",timepoint,".csv"))
+write.csv(covs.pat.tableone,file=paste0(study,".patsmoking.covs.pat.summary.",timepoint,".csv"))
+write.csv(covs.mat.tableone,file=paste0(study,".patsmoking.covs.mat.summary.",timepoint,".csv"))
 write.csv(pat.only.tableone,file=paste0(study,".patsmoking.pat.only.summary.",timepoint,".csv"))
 write.csv(passive.tableone,file=paste0(study,".patsmoking.passive.summary.",timepoint,".csv"))
 
 # Run each EWAS
-ewas.res.minimal.pat <- ewas.function(meth, pheno.minimal.pat[,!colnames(pheno.minimal.pat) =="sex"], variable.of.interest = "pat.active.smoking")
-ewas.res.minimal.mat <- ewas.function(meth, pheno.minimal.mat[,!colnames(pheno.minimal.mat) =="sex"], variable.of.interest = "mat.active.smoking")
-ewas.res.mutual <- ewas.function(meth, pheno.mutual[,!colnames(pheno.mutual) =="sex"], variable.of.interest = c("pat.active.smoking","mat.active.smoking"))
-ewas.res.mutual.boys.only <- ewas.function(meth, pheno.mutual.boys.only[,!colnames(pheno.mutual.boys.only) =="sex"], variable.of.interest = c("pat.active.smoking","mat.active.smoking"))
-ewas.res.mutual.girls.only <- ewas.function(meth, pheno.mutual.girls.only[,!colnames(pheno.mutual.girls.only) =="sex"], variable.of.interest = c("pat.active.smoking","mat.active.smoking"))
-ewas.res.pat.only <- ewas.function(meth, pheno.pat.only[,!colnames(pheno.pat.only) =="sex"], variable.of.interest = "pat.active.smoking")
-ewas.res.passive <- ewas.function(meth, pheno.passive[,!colnames(pheno.passive) =="sex"], variable.of.interest = "mat.passive.smoking")
+ewas.res.min.pat <- ewas.function(meth, pheno.min.pat[,!colnames(pheno.min.pat) =="sex"], variable.of.interest = "pat.active.smoking")
+ewas.res.min.mat <- ewas.function(meth, pheno.min.mat[,!colnames(pheno.min.mat) =="sex"], variable.of.interest = "mat.active.smoking")
+ewas.res.min.mutual <- ewas.function(meth, pheno.min.mutual[,!colnames(pheno.min.mutual) =="sex"], variable.of.interest = c("pat.active.smoking","mat.active.smoking"))
+ewas.res.covs.pat <- ewas.function(meth, pheno.covs.pat[,!colnames(pheno.covs.pat) =="sex"], variable.of.interest = "pat.active.smoking")
+ewas.res.covs.mat <- ewas.function(meth, pheno.covs.mat[,!colnames(pheno.covs.mat) =="sex"], variable.of.interest = "mat.active.smoking")
+ewas.res.covs.mutual <- ewas.function(meth, pheno.covs.mutual[,!colnames(pheno.covs.mutual) =="sex"], variable.of.interest = c("pat.active.smoking","mat.active.smoking"))
+ewas.res.covs.mutual.boys.only <- ewas.function(meth, pheno.covs.mutual.boys.only[,!colnames(pheno.covs.mutual.boys.only) =="sex"], variable.of.interest = c("pat.active.smoking","mat.active.smoking"))
+ewas.res.covs.mutual.girls.only <- ewas.function(meth, pheno.covs.mutual.girls.only[,!colnames(pheno.covs.mutual.girls.only) =="sex"], variable.of.interest = c("pat.active.smoking","mat.active.smoking"))
+ewas.res.covs.pat.only <- ewas.function(meth, pheno.covs.pat.only[,!colnames(pheno.covs.pat.only) =="sex"], variable.of.interest = "pat.active.smoking")
+ewas.res.covs.passive <- ewas.function(meth, pheno.covs.passive[,!colnames(pheno.covs.passive) =="sex"], variable.of.interest = "mat.passive.smoking")
 
 # Save EWAS results as an Rdata file
 save(list=intersect(ls(),
-            c("ewas.res.minimal.pat",
-            "ewas.res.minimal.mat",
-            "ewas.res.mutual",
+            c("ewas.res.min.pat",
+            "ewas.res.min.mat",
+            "ewas.res.min.mutual",
+            "ewas.res.covs.pat",
+            "ewas.res.covs.mat",
+            "ewas.res.covs.mutual",
             "ewas.res.mutual.boys.only",
             "ewas.res.mutual.girls.only",
             "ewas.res.pat.only",
