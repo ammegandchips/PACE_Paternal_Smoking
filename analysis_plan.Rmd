@@ -64,7 +64,7 @@ Perhaps moreso than in previous PACE analyses, it is very important that covaria
 
 * **Maternal BMI (mat.bmi):** continuous, numerical variable in kg/m2. Values can be either self-reported or measured. Pre-pregnancy BMI is preferred, but early pregnancy BMI is also acceptable. Please double check BMI values >= +/- 5 SD from the mean in your dataset to make sure they are not data entry errors.
 
-* **Paternal social class (pat.ses):** binary numeric variable (1=high/0=low), please use your preferred classification, but note that our preference is for education level. *If you do not have paternal social class, please use maternal social class instead, but please indicate this in the Excel document. In order for the code to run, you should still call this variable 'pat.ses' even if you're using maternal ses*
+* **Paternal social class (ses):** binary numeric variable (1=high/0=low), please use your preferred classification, but note that our preference is for education level. *If you do not have paternal social class, please use maternal social class instead, but please indicate this in the Excel document.*
 
 * **Paternal age (pat.age):** continuous numeric variable in years
 
@@ -89,19 +89,31 @@ Perhaps moreso than in previous PACE analyses, it is very important that covaria
 
 ## EWAS models
 
-### Minimally-adjusted: Paternal active smoking + Covariates + Cells (model name: minimal.pat)
+### Minimally-adjusted: Paternal active smoking + Covariates + Cells (model name: min.pat)
+Methylation ~ Paternal active smoking + SVs for batch + Estimated cell counts
+
+### Minimally-adjusted: Maternal active smoking + Covariates + Cells (model name: min.mat)
+Methylation ~ Maternal active smoking + SVs for batch + Estimated cell counts
+
+### Mutually-adjusted without covariates: adjusted for other parent's active smoking status and cells (model name: min.mutual)
+
+*Note that the code extracts results for the effect of paternal AND maternal active smoking*
+
+Methylation ~ Paternal smoking + Maternal active smoking status + Estimated cell counts
+
+### Covariate adjusted: Paternal active smoking + Covariates + Cells (model name: covs.pat)
 Methylation ~ Paternal active smoking + SVs for batch + Paternal age + Paternal BMI + Paternal socioeconomic status + Maternal age + Maternal BMI + Parity + Estimated cell counts
 
-### Minimally-adjusted: Maternal active smoking + Covariates + Cells (model name: minimal.mat)
+### Covariate adjusted: Maternal active smoking + Covariates + Cells (model name: covs.mat)
 Methylation ~ Maternal active smoking + SVs for batch + Paternal age + Paternal BMI + Paternal socioeconomic status + Maternal age + Maternal BMI + Parity + Estimated cell counts
 
-### Mutually-adjusted: adjusted for other parent's active smoking status, covariates and cells (model name: mutual)
+### Mutually-adjusted with covariates: adjusted for other parent's active smoking status, covariates and cells (model name: covs.mutual)
 
 *Note that the code extracts results for the effect of paternal AND maternal active smoking*
 
 Methylation ~ Paternal smoking + Maternal active smoking status + SVs for batch + Paternal age + Paternal BMI + Paternal socioeconomic status + Maternal age + Maternal BMI + Parity + Estimated cell counts
 
-### Mutually-adjusted, in boys only (model name: mutual.boys)
+### Mutually-adjusted, in boys only (model name: covs.mutual.boys)
 
 *Note that the code extracts results for the effect of paternal AND maternal active smoking*
 
@@ -109,7 +121,7 @@ Methylation ~ Paternal smoking + Maternal active smoking status + SVs for batch 
 
 Methylation ~ Paternal active smoking + Maternal active smoking + SVs for batch + Paternal age + Paternal BMI + Paternal socioeconomic status + Maternal age + Maternal BMI + Parity + Estimated cell counts
 
-### Mutually-adjusted, in girls only (model name: mutual.girls)
+### Mutually-adjusted, in girls only (model name: covs.mutual.girls)
 
 *Note that the code extracts results for the effect of paternal AND maternal active smoking*
 
@@ -117,13 +129,13 @@ Methylation ~ Paternal active smoking + Maternal active smoking + SVs for batch 
 
 Methylation ~ Paternal active smoking + Maternal active smoking + SVs for batch + Paternal age + Paternal BMI + Paternal socioeconomic status + Maternal age + Maternal BMI + Parity + Estimated cell counts
 
-### Paternal active smoking, only when mothers are not active smokers (model name: pat.only)
+### Paternal active smoking, only when mothers are not active smokers (model name: covs.pat.only)
 
 *The R code will exclude any mothers who are active smokers*
 
 Methylation ~ Paternal active smoking + SVs for batch + Paternal age + Paternal BMI + Paternal socioeconomic status + Maternal age + Maternal BMI + Parity + Estimated cell counts
 
-### Maternal passive smoking in the absence of maternal or paternal active smoking (model name: passive)
+### Maternal passive smoking in the absence of maternal or paternal active smoking (model name: covs.passive)
 
 *Please exclude any mothers who are active smokers themselves or have partners who are active smokers*
 
@@ -134,6 +146,7 @@ Methylation ~ Maternal passive smoking + SVs for batch + Paternal age + Paternal
 Please supply the following files in the specified formats:
 
 1) EWAS results: for each time point, one Rdata file labelled as YOURSTUDY.patsmoking.ewasresults.timepoint.Rdata. This will contain all outputs from all EWAS for one time point. The code will generate this file for you. If you have multiple time points, you will have an Rdata file for each time point: birth, early.childhood, late.childhood, adolescence, or adult.
+2) IQR log file: for each time point, one Rdata file labelled as YOURSTUDY.patsmoking.iqrlog.timepoint.Rdata.The code will generate this file for you. If you have multiple time points, you will have an Rdata file for each time point: birth, early.childhood, late.childhood, adolescence, or adult.
 2) Extra cohort information: one Excel file labelled as YOURSTUDY.patsmoking.cohortinfo.xlsx. This will contain information for each cohort relating to things like normalisation method and number of fathers excluded because of non-paternity. Please download and use the template available at [https://github.com/ammegandchips/PACE_Paternal_Smoking/blob/master/YOURSTUDY.patsmoking.cohortinfo.xlsx](https://github.com/ammegandchips/PACE_Paternal_Smoking/blob/master/YOURSTUDY.patsmoking.cohortinfo.xlsx)
 3) EWAS variables summary: for four EWAS models (mutual.pat, mutual.mat, pat.only, passive), a csv file labelled as YOURSTUDY.patsmoking.modelname.summary.timepoint.csv. This will contain summary statistics summarising predictor variables for each of these four EWAS models. The code will generate these files for you. If you have multiple time points, you will have a csv file for four EWAS within each time point: birth, early.childhood, late.childhood, adolescence, or adult.
 
@@ -154,7 +167,7 @@ You shouldn't have to rewrite or add to the code, unless otherwise stated.
 
 There are just two inputs required for these analyses:
 
-1) pheno: a dataframe containing all the "phenotype" data needed for this project. Each row is a sample(individual) and each column is a different variable. Necessary variable names are: "pat.active.smoking", "mat.active.smoking", "mat.passive.smoking", "sex","pat.ses",  "pat.age", "mat.age", "pat.bmi", "mat.bmi", "parity". If these columns are named differently in your dataset, please rename the columns accordingly.
+1) pheno: a dataframe containing all the "phenotype" data needed for this project. Each row is a sample(individual) and each column is a different variable. Necessary variable names are: "pat.active.smoking", "mat.active.smoking", "mat.passive.smoking", "sex","ses",  "pat.age", "mat.age", "pat.bmi", "mat.bmi", "parity". If these columns are named differently in your dataset, please rename the columns accordingly.
 
 2) meth: a matrix of methylation illumina beta values. Each column is a sample and each row is a probe on the array (450k or EPIC). Column names must correspond to the sample.id column in pheno.
 
