@@ -113,8 +113,8 @@ pheno.covs.mutual.boys.only <- pheno.covs.mutual[which(pheno.covs.mutual$sex == 
 pheno.covs.mutual.girls.only <- pheno.covs.mutual[which(pheno.covs.mutual$sex == 1),]
 
 # Summarise pheno data and save summaries as .csv files
-min.pat.tableone <- print(CreateTableOne(data=pheno.min.mutual[,-1],strata="pat.active.smoking",factorVars=c("pat.active.smoking","mat.active.smoking","ses","parity","sex")))
-min.mat.tableone <- print(CreateTableOne(data=pheno.min.mutual[,-1],strata="mat.active.smoking",factorVars=c("pat.active.smoking","mat.active.smoking","ses","parity","sex")))
+min.pat.tableone <- print(CreateTableOne(data=pheno.min.mutual[,-1],strata="pat.active.smoking",factorVars=c("pat.active.smoking","mat.active.smoking")))
+min.mat.tableone <- print(CreateTableOne(data=pheno.min.mutual[,-1],strata="mat.active.smoking",factorVars=c("pat.active.smoking","mat.active.smoking")))
 covs.pat.tableone <- print(CreateTableOne(data=pheno.covs.mutual[,-1],strata="pat.active.smoking",factorVars=c("pat.active.smoking","mat.active.smoking","ses","parity","sex")))
 covs.mat.tableone <- print(CreateTableOne(data=pheno.covs.mutual[,-1],strata="mat.active.smoking",factorVars=c("pat.active.smoking","mat.active.smoking","ses","parity","sex")))
 covs.pat.only.tableone <- print(CreateTableOne(data=pheno.covs.pat.only[,-1],strata="pat.active.smoking",factorVars=c("pat.active.smoking","ses","parity","sex")))
