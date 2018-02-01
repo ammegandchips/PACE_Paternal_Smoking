@@ -124,8 +124,8 @@ write.csv(min.pat.tableone,file=paste0(study,".patsmoking.min.pat.summary.",time
 write.csv(min.mat.tableone,file=paste0(study,".patsmoking.min.mat.summary.",timepoint,".csv"))
 write.csv(covs.pat.tableone,file=paste0(study,".patsmoking.covs.pat.summary.",timepoint,".csv"))
 write.csv(covs.mat.tableone,file=paste0(study,".patsmoking.covs.mat.summary.",timepoint,".csv"))
-write.csv(pat.only.tableone,file=paste0(study,".patsmoking.pat.only.summary.",timepoint,".csv"))
-write.csv(passive.tableone,file=paste0(study,".patsmoking.passive.summary.",timepoint,".csv"))
+write.csv(covs.pat.only.tableone,file=paste0(study,".patsmoking.covs.pat.only.summary.",timepoint,".csv"))
+write.csv(covs.passive.tableone,file=paste0(study,".patsmoking.covs.passive.summary.",timepoint,".csv"))
 
 # Run each EWAS
 ewas.res.min.pat <- ewas.function(meth, pheno.min.pat[,!colnames(pheno.min.pat) =="sex"], variable.of.interest = "pat.active.smoking")
@@ -147,8 +147,8 @@ save(list=intersect(ls(),
             "ewas.res.covs.pat",
             "ewas.res.covs.mat",
             "ewas.res.covs.mutual",
-            "ewas.res.mutual.boys.only",
-            "ewas.res.mutual.girls.only",
-            "ewas.res.pat.only",
-            "ewas.res.passive")),
+            "ewas.res.covs.mutual.boys.only",
+            "ewas.res.covs.mutual.girls.only",
+            "ewas.res.covs.pat.only",
+            "ewas.res.covs.passive")),
      file=paste0(study,".patsmoking.ewasresults.",timepoint,".Rdata"))
