@@ -94,7 +94,10 @@ load("/panfs/panasas01/dedicated-mrcieu/studies/latest/alspac/epigenetic/methyla
 # Perform any cohort-specific QC at this point (e.g. you might want to remove probes with high detection p-values)
 
 # IQR*3 method to remove outliers (if this has not already been applied to your data)
+log.iqr <- data.frame(cpgs = row.names(meth),NAs.before.IQR3 = rowSums(is.na(meth)))
 meth <- IQR.removal(meth)
+log.iqr$NAs.after.IQR3 <- rowSums(is.na(meth))
+save(log.iqr, file=paste0(study,".patsmoking.logIQR.",timepoint,".Rdata"))
 
 # Generate surrogate variables for technical batch and merge with pheno data to prepare pheno data frames for each EWAS
 pheno.min.mutual <- SVA.generate(meth, pheno, variable.of.interest = c("pat.active.smoking","mat.active.smoking"), model.covariates = NULL,n.sv=20)
