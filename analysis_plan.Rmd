@@ -137,7 +137,7 @@ Methylation ~ Paternal active smoking + SVs for batch + Paternal age + Paternal 
 
 ### Maternal passive smoking in the absence of maternal or paternal active smoking (model name: covs.passive)
 
-*Please exclude any mothers who are active smokers themselves or have partners who are active smokers*
+*The R code will exclude any mothers who are active smokers themselves or have partners who are active smokers*
 
 Methylation ~ Maternal passive smoking + SVs for batch + Paternal age + Paternal BMI + Paternal socioeconomic status + Maternal age + Maternal BMI + Parity + Estimated cell counts
 
